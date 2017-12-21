@@ -1,0 +1,73 @@
+{% extends "polls/base.html" %}
+
+{% block main %}
+<html lang="en">
+
+{% load static %}
+
+<style>
+input[type=text], select {
+    width: 100%;
+    padding: 12px 20px;
+    margin: 8px 0;
+    display: inline-block;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+input[type=submit] {
+    width: 100%;
+    background-color: #4CAF50;
+    color: white;
+    padding: 14px 20px;
+    margin: 8px 0;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+input[type=submit]:hover {
+    background-color: #45a049;
+}
+
+#SPlogo {
+	width:50%;
+	height:auto;
+	margin:120px 150px 10px 230px;
+  margin-left: 25%;
+  display: flex;
+}
+
+div {
+  height: auto;
+  width: 100%;
+  display: flex;
+  position: fixed;
+  align-items: center;
+  justify-content: center;
+  display: flex;
+}
+
+</style>
+<a style="position:absolute; top:20px; right:20px;"href="/logout">Log out</a>
+
+<head>
+<title>Search by IP address</title>
+</head>
+
+
+<img id="SPlogo" src="{% static 'SPlogo.jpg' %}" alt="Sand Prairie Logo" />
+
+
+<div>
+  <form action="/polls", method="GET">
+    <input type="text" id="IP" name="IP" placeholder="Customers IP...">
+  
+    <input type="submit" value="Submit">
+  </form>
+</div>
+
+</body>
+</html>
+{% endblock %}

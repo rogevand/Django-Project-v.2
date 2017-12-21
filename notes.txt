@@ -1,0 +1,229 @@
+Need a javascript to serve up the data, which it gets from the status.cgi page
+this javascript will parse the data to clean it up,
+it will add some conversational tips and hints concerning how to 
+    interpret the data, depending on the data (<70 is a good signal strength)
+
+Problems: 
+How to get the data to be updated synchronously with the status.cgi page
+
+javascript callbacks?
+
+use a js callback function to synchronize the displayed page to the online data
+
+django return xml
+
+requests
+
+jsonrequests
+
+finally figured out how to #1: Authenticate to the CPE, #2 return the json status.cgi
+
+now the trick is to properly shove that python script into django and use some 
+    kind of ajax to refresh it constantly
+
+Firstly, I am going to clean up the return so index uses templates
+
+http://10.1.85.29/161111.1236/status.cgi
+
+the question now is how to pass the data from my status view to my template (base.html)
+
+the data is returned as a jsonny dictionary. Where is it returned to? well,
+    when the current url is ".../status", the only thing displayed on that page
+    will be that json dictionary. Except that json dictionary needs to be routed 
+    to my api.(?) The api will parse the data???? 
+
+why is ajax not working?
+
+in the python code in views file, I am trying to manupilate the json object (c) to return only 
+select values for keys in the json file.
+
+my views python should return a smaller json object. Which my javascript in index.html will
+manipulate even more.
+
+got it. Now I need to figure out how to display multiple pieces of information from that json
+object that was returned to my index script by my views python.
+I need to use javascript to return several different values associated
+with keys in that json object.
+
+got that firugerd out. now I need to figure our how to do an IP search to obtain that page. 
+Here's how it will work: User opens app, is greeted by search box in which to put an IP address.
+after entering a valid IP address, the user is taken to the main app page. 
+I will grab that IP address that the user enters and store it in a variable that I use in
+my views python to take me to the CPE info for the correct CPE
+
+login with /main view, parse query string to get IP address, 
+use that IP address to format the url that python is requesting 
+json data from 
+
+OR 
+
+Use an HTML form to put the IP address into a variable which will 
+then be used to format the url that pythom requests uses to look for json data\
+
+Except you can't put html form values into a variable... kick ass.
+Must parse query string. yay
+
+Oh wait, my python inviews can't access the query string on the current server page! nice
+
+or can it...  (beautifulsoup?)
+
+
+
+Hey Sam, I am working on a Django project at my summer internship as a side thing, 
+and I kind of ran into a little snag that I have having a grand ole time trying to 
+get past. The idea is to get elements of a live json file (live as in produced by a
+cgi script on a server) and use ajax to display it dynamically. This data 
+represents the quality of a customer's wireless internet connection. (We 
+provide wireless internet service to customers in rural areas). The device
+that collects connection quality data is called a CPE, I am making an app
+for the after hours support people so they can see a few elements of this
+data, without having to log into the CPE (don't want to give out credentials).
+So I will use the IP address to find the customer specific CPE. If I type the 
+10.(...) ip address into a browser on the company network, the CPE info page 
+comes up. Okay all that to say, I am having trouble with the "search by IP" 
+part. I capture the IP address in an HTML form and send it in the query string
+to another page which runs js which runs a python script to use that IP address
+to log in (using requests library), authenticating and everything. How would you 
+go about getting the IP address (in query string) to my python script? Is there 
+maybe a way to pass a variable to python from the js that calls that python function? 
+Screenshots below: (sorry didn't realize this would take so long to explain)
+
+Hey Sam, I am working on a Django project at my summer internship as a side thing, and I kind of ran into a little snag that I have having a grand ole time trying to get past. The idea is to get elements of a live json file (live as in produced by a cgi script on a server) and use ajax to display it dynamically. This data represents the quality of a customer's wireless internet connection. (We provide wireless internet service to customers in rural areas). The device that collects connection quality data is called a CPE, I am making an app for the after hours support people so they can see a few elements of this data, without having to log into the CPE (don't want to give out credentials). So I will use the IP address to find the customer specific CPE. If I type the 10.(...) ip address into a browser on the company network, the CPE info page comes up. Okay all that to say, I am having trouble with the "search by IP" part. I capture the IP address in an HTML form and send it in the query string to another page which runs js which runs a python script to use that IP address to log in (using requests library), authenticating and everything. How would you go about getting the IP address (in query string) to my python script? Is there maybe a way to pass a variable to python from the js that calls that python function? Screenshots below: (sorry didn't realize this would take so long to explain)
+
+
+Finally figured out how to put the current url into a js variable. Now
+I just need to return it to python
+
+I am now parsing the query string from the url in JS
+
+
+I still haven't figured out how to get that variable to python from my javascript...
+I have tried makin ga new view/url/
+
+Finally got the thing working! iroined out several small syntactical/careless mistakes that 
+were causing errors. 
+
+list of things to do now:
+clean up code
+get all relevant information
+beautify the page
+delegate seperate functions for logging into UBNT/ajaxing the relevant data
+    (create a model to store things like:
+        IP address, cookies, custom json)
+put my main javascript function in a seperate file and call it in index(trouble with this)
+
+*learn about static files
+
+
+in my views file, use indexing to append my new key value pairs to a new dictionary
+instead of using a for loop
+
+Flot charts:
+reading through some documentation on flot charts. The first challenge is getting 
+a flot graph (line chart) to dynamically update according to the data that I am 
+already getting from views. (myKey)
+The nect challenge will be dynamically changing the scale of the graph to 
+adjust for jumps in speed. For exam;le, if the scale is too small, then 
+it will basically just look like straight vertical lines. We need a readable
+graph.
+
+the data for the graphs does not seem to be coming from the status.cgi page...
+ which means that I will not be able to return my graphs from the data gotten 
+ from my views.status python. This sill be harder than I thought.
+
+ I found the cgi script that is returning the tx/rx values. 
+
+ create new functions in views.py to return different things
+
+ conditional formatting:
+ signal strength; if it is above 70, give red text. if it is between
+ 60 and 70, give then 1/3 bars. between 55-60, 2/3 bars. Between 40-55, 3/3 bars
+
+ import all correct flot libraries
+ use imported flot libraries to make an example graph
+ plug my ajax data into the flot code
+
+ need to have an incrementally growing array of data that I am getting and saving from 
+ my ajax call to ifstats: interfaces[stats][rx_bytes]
+
+ nevermind. I will just move the graph from right to left starting blank.
+
+*********************************
+nowuptime - inituptime - window
+nowRX - initRX / window / 8 = bits/s
+nowTX - initTX / window / 8 = bits/s
+*********************************
+
+
+how many seconds wil the graph initialize to?
+how will I populate each second with data when I have none yet?
+It will be empty, instead of the first dataset using the whole scope of the graph
+each dataset will represent one second
+the graph should show like 20 seconds worth of data points
+the graph should not inchworm
+each second will be represented by an ordered pair (x,y)
+in that ordered pair, (x, y), temp = (now += updateInterval, y) 
+
+GetData is working. x = uptime since pageload, and y = rx data transfer rate
+the graph is not displaying correctly, however
+it is still inchworming
+
+right now I am just going to try to move the graph to the side of the page and 
+work on some other stuff
+
+
+I am getting an error message saying, "Uncaught Typeerror: Cannot read property 'data' of undefined
+
+The graph works whrn I use random data in the 'GetData function
+but not when I am using my Ajax data. I assume that this is because the Ajax data is ont in the 
+form it was expecting
+
+When I console log the random data, it is an enormous array
+when I console log my own data, it is only an ordered pair. 
+I need to plug my numbers into the random function to make them fill the array
+
+the next step is conditional formatting in js. the goal is to look at something--
+like the signal strength, and determine if the signal strength is good or poor,
+and if it is poor, do something special. For example, maybe make the border red, 
+or put a bouncing arrow next to it. 
+
+
+I need to put up a picture of the packages. I have parsed the string in the 
+hostname to determine the type of packade the customer has, so all I need to do is, 
+tell the crc peeps what package the customer has, so they can advise on whether it
+may be a good idea to upgrade their package, as the lower end packages are not meant for 
+hd video streaming and such
+
+start a timer for cpuload, to determine if it is above 90% for over a minute.
+
+
+to accurately calculate the current "RATE" of data transfer, I need to get the 
+current bits by subtracting the difference in two ajax calls, delimited by the 
+ajax call.(to ensure that I get two different readings). Compare the current p;qaruijhtgwo9uihjtuag.yk,.
+
+fixed the graph. I think
+
+added some fire css to the letters on cpuload when it reads above 90%
+
+
+need to create a wisdom box where recommendations will be placed
+the problem is that many of the conditions for the wisom are
+insode loops. When I append (=+) to the innerhtml of the element wisdom,
+it keeps adding the same phrases over and over again
+potential solutions:
+    
+
+features to add:
+determine if the equipment is a tower or a CPE
+Determine package from data rather than parsing from name
+
+
+Need a program that will scan a list of ip addresses and return a list of the 
+ones that don't match a set of predetermined criteria.
+Criteria:
+package
+rx/tx
+tower 
+MAC 
+
+*****Goal for today is to use beautifulsoup to access the real package details*****

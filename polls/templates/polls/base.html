@@ -1,0 +1,356 @@
+{% load static %}
+
+<style>
+
+#graphinfo {
+    font-family: Verdana;
+    border: 5px solid grey;
+    border-radius: 5px;
+    height: 300px;
+    width: 600px;
+    display: flex;
+    vertical-align: left;
+}
+.log{
+    font-family: Verdana;
+    border: 5px solid yellowgreen;
+    border-radius: 10px;
+    margin-top: 100px;
+    margin: auto;
+    width: auto;
+    padding: 10px;
+    display: flex;
+    position: absolute;
+    right:30%;
+    left: 30%;
+    align-items: center;
+    justify-content: center;
+    }
+.left{
+    font-family: Verdana;
+    border: 5px solid yellowgreen;
+    border-radius: 10px;
+    margin-top: 100px;
+    margin: auto;
+    width: auto;
+    padding: 10px;
+    display: flex;
+    position: auto;
+    align-items: center;
+    justify-content: center;
+    }
+#hostname {
+    font-family: Verdana;
+    border: 5px solid grey;
+    border-radius: 10px;
+    margin-top: 100px;
+    margin: auto;
+    width: auto;
+    padding: 10px;
+    display: flex;
+    position: auto;
+    align-items: center;
+    justify-content: center;
+    }
+#distance {
+    font-family: Verdana;
+    border: 5px solid grey;
+    border-radius: 10px;
+    margin-top: 100px;
+    margin: auto;
+    width: auto;
+    padding: 10px;
+    display: flex;
+    position: auto;
+    align-items: center;
+    justify-content: center;
+}
+#signal {
+    font-family: Verdana;
+    border: 5px solid grey;
+    border-radius: 10px;
+    margin-top: 100px;
+    margin: auto;
+    width: auto;
+    padding: 10px;
+    display: flex;
+    position: auto;
+    align-items: center;
+    justify-content: center;
+}
+#uptime {
+    font-family: Verdana;
+    border: 5px solid grey;
+    border-radius: 10px;
+    margin-top: 100px;
+    margin: auto;
+    width: auto;
+    padding: 10px;
+    display: flex;
+    position: auto;
+    align-items: center;
+    justify-content: center;
+}
+#package {
+    font-family: Verdana;
+    border: 5px solid grey;
+    border-radius: 10px;
+    margin-top: 100px;
+    margin: auto;
+    width: auto;
+    padding: 10px;
+    display: flex;
+    position: auto;
+    align-items: center;
+    justify-content: center;
+}
+#cpuload{
+    font-family: Verdana;
+    border: 5px solid grey;
+    border-radius: 10px;
+    margin-top: 100px;
+    margin: auto;
+    width: auto;
+    padding: 10px;
+    display: flex;
+    position: auto;
+    align-items: center;
+    justify-content: center;
+}
+button{
+    background-color: #4CAF50;
+    color: white;
+    padding: 14px 20px;
+    margin: auto;
+    border: none;
+    border-radius: 4px;
+    cursor:hand;
+    width: auto;
+    padding: 10px;
+    display: flex;
+    position: auto;
+    align-items: center;
+    justify-content: center;
+}
+#placeholder{
+
+    position:auto;
+    width: 400px;
+    height: 200px;
+}
+#SPlogo{
+    justify-content: center;
+    position:auto; 
+    top:10px;
+    display: flex;
+}
+#main{
+    font-family: Verdana;
+    margin-top: 100px;
+    margin: auto;
+    float: left;
+    width: 45%;
+    padding: 10px;
+    position: auto;
+    border: 10px;
+    border-right-color: black;
+}
+#info{
+   font-family: Verdana;
+    margin-top: 100px;
+    margin: auto;
+    float: right;
+    width: 45%;
+    padding: 10px;
+    position: auto;
+    border: 10px;
+    border-right-color: black;
+}
+
+#graphtitle{
+     justify-content: center;
+}
+#legend{
+    margin-top: 100px;
+    margin: auto;
+    width: 40%;
+    padding: 10px;
+    display: flex;
+    position: auto;
+    align-items: center;
+    justify-content: center;
+}
+#eth0{
+    font-family: Verdana;
+    border: 5px solid grey;
+    border-radius: 10px;
+    margin-top: 100px;
+    margin: auto;
+    width: auto;
+    padding: 10px;
+    display: flex;
+    position: auto;
+    align-items: center;
+    justify-content: center;
+}
+@keyframes blink {
+    50% { border-color: #ff0000; }
+}
+#wisdom {
+    font-family: Verdana;
+    font-size: 20;
+    border: 5px solid grey;
+    animation: blink .5s step-end infinite alternate;
+    border-radius: 10px;
+    margin-top: 100px;
+    margin: auto;
+    width: 60%;
+    padding: 10px;
+    display: flex;
+    position: auto;
+    align-items: center;
+    justify-content: center;
+    }
+#instruct{
+    font-family: fantasy;
+    font-size: 20;
+    border-radius: 10px;
+    margin-top: 100px;
+    margin: auto;
+    width: 60%;
+    padding: 10px;
+    display: flex;
+    position: auto;
+    align-items: center;
+    justify-content: center;
+}
+#enabled{
+    font-family: Verdana;
+    border: 5px solid grey;
+    border-radius: 10px;
+    margin-top: 100px;
+    margin: auto;
+    width: auto;
+    padding: 10px;
+    display: flex;
+    position: auto;
+    align-items: center;
+    justify-content: center;
+}
+#plex{
+    font-family: Verdana;
+    border: 5px solid grey;
+    border-radius: 10px;
+    margin-top: 100px;
+    margin: auto;
+    width: auto;
+    padding: 10px;
+    display: flex;
+    position: auto;
+    align-items: center;
+    justify-content: center;
+}
+
+.fire {
+            animation: burn 1.5s linear infinite alternate;
+    -webkit-animation: burn 1.5s linear infinite alternate;
+        -moz-animation: burn 1.5s linear infinite alternate;
+        -ms-animation: burn 1.5s linear infinite alternate;        
+}
+.basic{
+    font-family: Verdana;
+    border: 5px solid grey;
+    border-radius: 10px;
+    margin-top: 100px;
+    margin: auto;
+    width: auto;
+    padding: 10px;
+    display: flex;
+    position: auto;
+    align-items: center;
+    justify-content: center;
+}
+
+@keyframes burn {
+    from { text-shadow: -.1em 0 .3em #fefcc9, .1em -.1em .3em #feec85, -.2em -.2em .4em #ffae34, .2em -.3em .3em #ec760c, -.2em -.4em .4em #cd4606, .1em -.5em .7em #973716, .1em -.7em .7em #451b0e; }
+    45%  { text-shadow: .1em -.2em .5em #fefcc9, .15em 0 .4em #feec85, -.1em -.25em .5em #ffae34, .15em -.45em .5em #ec760c, -.1em -.5em .6em #cd4606, 0 -.8em .6em #973716, .2em -1em .8em #451b0e; }
+    70%  { text-shadow: -.1em 0 .3em #fefcc9, .1em -.1em .3em #feec85, -.2em -.2em .6em #ffae34, .2em -.3em .4em #ec760c, -.2em -.4em .7em #cd4606, .1em -.5em .7em #973716, .1em -.7em .9em #451b0e; }
+    to   { text-shadow: -.1em -.2em .6em #fefcc9, -.15em 0 .6em #feec85, .1em -.25em .6em #ffae34, -.15em -.45em .5em #ec760c, .1em -.5em .6em #cd4606, 0 -.8em .6em #973716, -.2em -1em .8em #451b0e; }						
+}
+
+@-webkit-keyframes burn {
+    from { text-shadow: -.1em 0 .3em #fefcc9, .1em -.1em .3em #feec85, -.2em -.2em .4em #ffae34, .2em -.3em .3em #ec760c, -.2em -.4em .4em #cd4606, .1em -.5em .7em #973716, .1em -.7em .7em #451b0e; }
+    45%  { text-shadow: .1em -.2em .5em #fefcc9, .15em 0 .4em #feec85, -.1em -.25em .5em #ffae34, .15em -.45em .5em #ec760c, -.1em -.5em .6em #cd4606, 0 -.8em .6em #973716, .2em -1em .8em #451b0e; }
+    70%  { text-shadow: -.1em 0 .3em #fefcc9, .1em -.1em .3em #feec85, -.2em -.2em .6em #ffae34, .2em -.3em .4em #ec760c, -.2em -.4em .7em #cd4606, .1em -.5em .7em #973716, .1em -.7em .9em #451b0e; }
+    to   { text-shadow: -.1em -.2em .6em #fefcc9, -.15em 0 .6em #feec85, .1em -.25em .6em #ffae34, -.15em -.45em .5em #ec760c, .1em -.5em .6em #cd4606, 0 -.8em .6em #973716, -.2em -1em .8em #451b0e; }						
+}
+
+@-moz-keyframes burn {
+    from { text-shadow: -.1em 0 .3em #fefcc9, .1em -.1em .3em #feec85, -.2em -.2em .4em #ffae34, .2em -.3em .3em #ec760c, -.2em -.4em .4em #cd4606, .1em -.5em .7em #973716, .1em -.7em .7em #451b0e; }
+    45%  { text-shadow: .1em -.2em .5em #fefcc9, .15em 0 .4em #feec85, -.1em -.25em .5em #ffae34, .15em -.45em .5em #ec760c, -.1em -.5em .6em #cd4606, 0 -.8em .6em #973716, .2em -1em .8em #451b0e; }
+    70%  { text-shadow: -.1em 0 .3em #fefcc9, .1em -.1em .3em #feec85, -.2em -.2em .6em #ffae34, .2em -.3em .4em #ec760c, -.2em -.4em .7em #cd4606, .1em -.5em .7em #973716, .1em -.7em .9em #451b0e; }
+    to   { text-shadow: -.1em -.2em .6em #fefcc9, -.15em 0 .6em #feec85, .1em -.25em .6em #ffae34, -.15em -.45em .5em #ec760c, .1em -.5em .6em #cd4606, 0 -.8em .6em #973716, -.2em -1em .8em #451b0e; }						
+}
+
+@-ms-keyframes burn {
+    from { text-shadow: -.1em 0 .3em #fefcc9, .1em -.1em .3em #feec85, -.2em -.2em .4em #ffae34, .2em -.3em .3em #ec760c, -.2em -.4em .4em #cd4606, .1em -.5em .7em #973716, .1em -.7em .7em #451b0e; }
+    45%  { text-shadow: .1em -.2em .5em #fefcc9, .15em 0 .4em #feec85, -.1em -.25em .5em #ffae34, .15em -.45em .5em #ec760c, -.1em -.5em .6em #cd4606, 0 -.8em .6em #973716, .2em -1em .8em #451b0e; }
+    70%  { text-shadow: -.1em 0 .3em #fefcc9, .1em -.1em .3em #feec85, -.2em -.2em .6em #ffae34, .2em -.3em .4em #ec760c, -.2em -.4em .7em #cd4606, .1em -.5em .7em #973716, .1em -.7em .9em #451b0e; }
+    to   { text-shadow: -.1em -.2em .6em #fefcc9, -.15em 0 .6em #feec85, .1em -.25em .6em #ffae34, -.15em -.45em .5em #ec760c, .1em -.5em .6em #cd4606, 0 -.8em .6em #973716, -.2em -1em .8em #451b0e; }						
+}
+
+</style>
+<head>
+    <title>CPE Info:</title>
+    
+    <link rel="icon" href="{% static 'doge.png' %}">
+   
+</head>
+
+
+<body>
+<div id="SPlogo">
+    
+<img src="{% static 'SPlogo.jpg' %}" />
+
+</div>
+<br>
+
+{% block main %}
+{% endblock %}
+
+<div id="main">
+{% block content %}
+{% endblock %}
+
+{% block script1 %}
+{% endblock %}
+
+</div>
+<br>
+
+
+<div id="info">
+
+
+
+{% block plugged %}
+{% endblock plugged %}
+
+
+{% block graphs%}
+{% endblock graphs%}
+</div>
+<br>
+
+
+
+{% block wisdom %}
+{% endblock wisdom %}
+
+{% block login %}
+{% endblock %}
+
+</body>
+</html>
+

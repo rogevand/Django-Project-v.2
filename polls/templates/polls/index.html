@@ -1,0 +1,429 @@
+{% extends "polls/base.html" %}
+
+{% load static %}
+
+
+{% block title %}
+{{ section.title }}
+{% endblock %}
+
+
+{% block script1 %}
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+<script src="{% static 'flot/excanvas.min.js' %}"></script>
+<script src="{% static 'flot/jquery.flot.min.js' %}"></script>
+<script src="{% static 'flot/jquery.flot.min.js' %}"></script>
+<script src="{% static 'flot/jquery.flot.time.js' %}"></script>    
+<script src="{% static 'flot/jquery.flot.symbol.js' %}"></script>
+<script src="{% static 'flot/jquery.flot.axislabels.js' %}"></script>
+
+ <a style="position:absolute; top:20px; right:20px;"href="/logout">Log out</a>
+
+<script>
+var warnings = {};
+
+// setting up the auto-refresh functions
+$(function() {
+    statusRefresh();
+});
+
+// functions seen below are priority, and are refreshed continuously
+function statusRefresh() {
+    setTimeout(statusRefresh, 10000);
+    status();
+    ifstats();
+    packagedeets();
+};
+
+function status() {
+var signals = ""
+var CPUs = ""
+var pluggs = ""
+var enabs = ""
+var malfs = ""
+var data = $.ajax({
+    url:"/status/",
+    type: "GET",
+    data: {IP: new URLSearchParams(window.location.search).get("IP")},
+    beforeSend: function(data, settings) {},
+    success: function(data){
+
+        // get distance from tower
+        document.getElementById("distance").innerHTML = "Distance from tower: " + "<br>" + data.distance;
+        document.getElementById("distance").style.borderColor = "yellowgreen"
+        document.getElementById("signal").innerHTML = "Signal Strength: " + "<br>" + data.signal;
+        // signal strength
+        if (signals == ""){
+            if(data.signalint > 60){
+                signals = "&#9755 Antennae signal is poor, realign or check LOS <br>"
+                warnings["signal"] = signals
+
+                }
+            }
+                    
+        if (data.signalint > 70){
+            document.getElementById("signal").style.borderColor= "red";
+            document.getElementById("wisdom").style.borderColor = "red"
+            
+        }
+        else if(data.signalint <= 70 && data.signalint > 65){
+            document.getElementById("signal").style.borderColor= "#FFF700";
+            document.getElementById("wisdom").style.borderColor = "red"
+        }
+        else if(data.signalint < 65){
+            document.getElementById("signal").style.borderColor= "green";   
+        }
+// cpu load percentage
+cpl = document.getElementById("cpuload")
+pac = document.getElementById("package")
+
+if (CPUs == ""){
+            if(data.cpuload < 90){
+                CPUs = ""
+                }
+            
+            else if (data.cpuload >= 90){
+                CPUs = "&#9755 CPU usage is off the charts: reboot the CPE, check for firmware updates <br>"
+                warnings["cpu"] = CPUs
+            }
+        }
+
+        if (data.cpuload == false){
+        cpl.innerHTML = "&#9940 " + "Could not find CPU usage data " + "&#9940"
+        
+        }
+        else {
+            cpl.innerHTML = "CPU usage: " + data.cpuload + "%"; 
+            if (data.cpuload >= 90){
+            cpl.style.borderColor= "red";
+            cpl.title= "This is actually fairly normal. Have the customer reboot the CPE ";
+            var cups = cpl;
+            cups.className = "fire";
+            document.getElementById("wisdom").style.borderColor = "red"
+            
+            
+        }
+        
+        else if (data.cpuload < 90 && data.cpuload >= 80){
+            cpl.style.borderColor= "#FFF700";
+            cpl.title= "Keep an eye on this guy..."
+            var cups = cpl;
+            cups.className = "basic";
+        }
+        else if(data.cpuload <= 80){
+            cpl.style.borderColor= "green";
+            cpl.title= "If the CPU usage is stuck at 100% for more than a minute, it may be a good idea to reboot the CPE";
+            var cups = cpl;
+            cups.className = "basic";
+        }}
+    // parsing package details from customer name
+    document.getElementById("hostname").innerHTML =  data.hostname;
+    document.getElementById("hostname").style.borderColor = "yellowgreen"
+    document.getElementById("hostname").style.fontSize = "35"
+    pac.style.borderColor = "yellowgreen"
+
+    if (data.package == "Smart Link"){
+            pac.innerHTML =  "Smartlink package details: " + "<br>" + " 1 Mb download, 0.5 Mb upload"
+            pac.title = "We recommend Elitelink or better for high definition video streaming"
+    }
+    else if(data.package == "Elite Link"){
+        pac.style.border = "5px solid green";
+        pac.innerHTML = "Elitelink package details: 3 Mb download, 0.75 Mb upload"
+    }
+    else if(data.package == "Power Link"){
+        pac.innerHTML = "Powerlink package details: 4 Mb download, 0.75 Mb upload"
+    }
+    // this function checks to see if the CPE is plugged in
+    if (pluggs == ""){
+        
+    if(data.eth == 0){ 
+        pluggs = "&#9755 Make sure POE is plugged in correctly, check cable ends for blackening, water, and poor pin contact <br>"
+        warnings["plugged"] = pluggs // add this output to the netwizard
+        }
+    }
+    // we are given a bool to checked plugged or no
+    if (data.eth == 1){
+        document.getElementById("eth0").innerHTML = "CPE is plugged in"
+        document.getElementById("eth0").style.borderColor = "green"
+    }
+    else if(data.eth == 0){
+        document.getElementById("eth0").innerHTML = "CPE is not plugged in"
+        document.getElementById("eth0").style.borderColor = "red"
+    }
+    // this function checks to see if the CPE is enabled (late bill payment)
+    if (enabs == ""){
+    if(data.enabled == false){ 
+        enabs = "&#9755 Make sure customer is current on bill payments <br>"
+        warnings["enabled"]= enabs // add function output to the netwizard
+        }
+    }
+    if (data.enabled == true){
+        document.getElementById("enabled").innerHTML = "CPE is enabled"
+        document.getElementById("enabled").style.borderColor = "green"
+    }
+    else if(data.enabled == false){
+        document.getElementById("enabled").innerHTML = "CPE is not enabled"
+        document.getElementById("enabled").style.borderColor = "red"
+    }
+    //check duplex value for physical malfunctions
+    if (malfs == ""){
+    if(data.plex == false){ 
+        malfs = "&#9755 Physical malfunction: bad cable, bad POE, bad antennae are all possibilities <br>"
+         // add function output to the netwizard
+        }
+    }
+    //is this elseif necessary??????????????
+    else if(data.plex == true){
+        malfs = ""
+        warnings["malfunction"]= malfs
+    }
+    if (data.plex == true){
+        document.getElementById("plex").innerHTML = "No physical malfunctions detected"
+        document.getElementById("plex").style.borderColor = "green"
+    }
+    else if(data.plex == false){
+        document.getElementById("plex").innerHTML = "Physical malfunctions detected"
+        document.getElementById("plex").style.borderColor = "red"
+    }
+    }});
+}
+
+
+// CPE uptime
+function ifstats() {
+      var data = $.ajax(
+        {url:"/rates/",
+        type: "GET",
+        data: {IP: new URLSearchParams(window.location.search).get("IP")},
+        beforeSend: function(data, settings) {
+        },
+        success: function(data){
+        document.getElementById("uptime").innerHTML = "Time since last reboot: " + data.uptime;  
+        if(data.color == false){
+            document.getElementById("uptime").style.borderColor= "red";
+        }
+        else if(data.color == true){
+            document.getElementById("uptime").style.borderColor= "green";
+        }
+      }});
+    }
+
+function packagedeets(){
+    var data = $.ajax(
+        {url:"/packagedeets/",
+        type: "GET",
+        data: {IP: new URLSearchParams(window.location.search).get("IP")},
+        beforeSend: function(data, settings) {
+        },
+        success: function(data){
+      }});
+
+}
+    //below is the backbone for the netwizard
+   
+</script>
+
+<!-- making placeholders for all above funtions -->
+<div id="hostname" title="This is the customer's name" name="dev">
+Loading customer name...
+</div> <br>
+
+<div id="signal"   title="A good signal strength is anywhere below 70" name="dev">
+Loading signal strength...
+</div> <br>
+
+<div id="uptime"   title=" If the CPE has not been rebooted in the last 24 hours, ask them to reboot" name="dev">Loading CPE uptime...
+</div> <br>
+
+<!--button type="button" onclick="bar();">Does the customer want to stream movies?</button--> 
+<div id="package"  name="dev">
+Loading package details...
+</div><br>
+
+<div id="cpuload" class="basic" name="dev">
+Loading CPU details...
+</div><br>
+
+<div id="distance" title="Distance in miles from the connected tower" name="dev">
+Loading distance from tower...
+</div> <br>
+
+
+{% endblock script1 %}
+
+{% block graphs %}
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+<script src="{% static 'flot/excanvas.min.js' %}"></script>
+<script src="{% static 'flot/jquery.flot.min.js' %}"></script>
+<script src="{% static 'flot/jquery.flot.min.js' %}"></script>
+<script src="{% static 'flot/jquery.flot.time.js' %}"></script>    
+<script src="{% static 'flot/jquery.flot.symbol.js' %}"></script>
+<script src="{% static 'flot/jquery.flot.axislabels.js' %}"></script>
+
+<h3 id=graphtitle>Bandwidth <br> usage: </h3> 
+
+<script>
+
+// this is the network usage graph
+$(function() {
+		var data = [];
+		var totalPoints = 60;
+        var currentTX;
+        var current;
+        var mar = 10
+
+// ajax for rx/tx values
+function ajay(){
+    $.ajax({
+       url:"/rates/",
+       dataType: 'json',
+       method: "GET",
+       data: {IP: new URLSearchParams(window.location.search).get("IP")},
+       beforeSend: function(data, settings) {},
+       success: function(jdata){
+       if (typeof(last) == 'undefined') {
+           last = jdata.upsec
+           }
+
+       current = jdata.upsec - last 
+       if (typeof(lastTX) == 'undefined')
+            { lastTX = jdata.TX }
+        if (typeof(lastRX) == 'undefined')
+            { lastRX = jdata.RX }
+       currentTX = jdata.TX - lastTX 
+       currentRX = jdata.RX - lastRX
+       lastTX = jdata.TX
+       lastRX = jdata.RX
+        if (lastTX > currentTX){
+        mar = lastTX 
+        }
+
+
+}})}
+
+// manipulate data retrieved in ajax to be meaningful (convert to bits, get data *rate)
+function GetData() {
+    ajay()
+    // prevent graph from compressing
+    if (data.length > 0)
+    data = data.slice(1);
+    while (data.length < totalPoints) {
+        //convert to bits
+        data.push(currentTX * 8 / 3072);}
+        //data.push(currentRX * 8 / 3072);} 
+
+        var res = [];
+        // put consecutive rates into an array until it is full
+        for (var i = 0; i < data.length; ++i) {
+            res.push([i, data[i]])
+    }
+  //  if (data1.length > 0)
+  //  data = data.slice(1);
+  //  while (data.length < totalPoints) {
+  //      //convert to bits
+  //      data.push(currentTX * 8 / 3072);} 
+  //      var res = [];
+  //      // put consecutive rates into an array until it is full
+  //      for (var i = 0; i < data.length; ++i) {
+  //          res.push([i, data[i]])
+  //  }
+	return res;
+}
+
+
+//graph options
+var options = {
+    series: {
+        shadowSize: 0,
+        lines: {
+            show:true,
+            linewidth:1.2,
+            fill:true,
+            color: "red"
+        }
+    },
+    color: "#f00",
+    yaxis: {
+        min: 0,
+        max: mar
+    },
+    xaxis: {
+        show: false
+    },
+    legend: {        
+    }
+    }
+
+//create placeholder variable for use in html
+var plot = $.plot("#placeholder", [ GetData() ], options);
+
+// set base bordercolor after a setTimeout, so loading bordercolor is grey
+function bord(){
+    document.getElementById("info").style.borderColor = "yellowgreen"
+}
+
+// draw the graph with given data
+function update() {
+    plot.setData([GetData()]);
+    plot.draw();
+    setTimeout(update, 5000);
+    setTimeout(bord,6000)
+}
+update();
+$("#footer").prepend("Flot " + $.plot.version + " &ndash; ");
+});
+
+
+</script>
+
+<!-- graph placeholder -->
+<div id="placeholder" ></div> <br>
+
+{% endblock graphs%}
+
+
+{% block plugged %}
+
+
+<div id="eth0" title="Determine if the equipment is actually plugged in" name="dev">
+Loading CPE power status... 
+</div> <br>
+<div id="enabled" title="If equipment is disabled, the customer may be late on bill payments" name="dev">
+Loading CPE enabled state...
+</div> <br>
+<div id="plex" title="If a physical malfunction is detected, one or more parts of the equipment may need to be replaced" name="dev">
+Checking hardware integrity...
+</div> <br>
+
+
+{% endblock plugged %}
+
+{% block wisdom %}
+
+<img id="legend" src="{% static 'legendcolor.png' %}" />
+
+<div id="wisdom" title="Sage wisdom from a little green man" name="dev">
+    <!--h3 style="font-family:fantasy;">Net wizard<h3--> <br>
+</div>
+
+<script>
+for(var key in warnings) {
+  var value = warnings[key];
+ 
+ var wisdomsz = new array
+ wisdomsz += value
+ 
+}
+document.getElementById("wisdom").innerHTML = warnings["signal"];
+
+
+</script>
+
+<h3 id="instruct">Hover over elements for instructions<h3>
+{% endblock wisdom %}
+

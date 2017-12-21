@@ -1,0 +1,700 @@
+
+<script>
+
+	$(function() {
+
+		// We use an inline data source in the example, usually data would
+		// be fetched from a server
+
+		var data = [],
+			totalPoints = 300;
+
+		function getRandomData() {
+
+			if (data.length > 0)
+				data = data.slice(1);
+
+			// Do a random walk
+
+			while (data.length < totalPoints) {
+
+				var prev = data.length > 0 ? data[data.length - 1] : 50,
+					y = prev + Math.random() * 10 - 5;
+
+				if (y < 0) {
+					y = 0;
+				} else if (y > 100) {
+					y = 100;
+				}
+
+				data.push(y);
+			}
+
+			// Zip the generated y values with the x values
+
+			var res = [];
+			for (var i = 0; i < data.length; ++i) {
+				res.push([i, data[i]])
+			}
+
+			return res;
+		}
+
+		// Set up the control widget
+
+		var updateInterval = 30;
+		$("#updateInterval").val(updateInterval).change(function () {
+			var v = $(this).val();
+			if (v && !isNaN(+v)) {
+				updateInterval = +v;
+				if (updateInterval < 1) {
+					updateInterval = 1;
+				} else if (updateInterval > 2000) {
+					updateInterval = 2000;
+				}
+				$(this).val("" + updateInterval);
+			}
+		});
+
+		var plot = $.plot("#placeholder", [ getRandomData() ], {
+			series: {
+				shadowSize: 0	// Drawing is faster without shadows
+			},
+			yaxis: {
+				min: 0,
+				max: 100
+			},
+			xaxis: {
+				show: false
+			}
+		});
+
+		function update() {
+
+			plot.setData([getRandomData()]);
+
+			// Since the axes don't change, we don't need to call plot.setupGrid()
+
+			plot.draw();
+			setTimeout(update, updateInterval);
+		}
+
+		update();
+
+		// Add the Flot version string to the footer
+
+		$("#footer").prepend("Flot " + $.plot.version + " &ndash; ");
+	});
+
+	</script>
+
+
+
+<script>
+      
+var options = {
+    series: {
+        lines: {
+            show: true,
+            lineWidth: 1.2,
+            fill: true
+        }
+    },
+    xaxis: {
+        mode: "time",
+        tickSize: [2, "second"],
+        tickFormatter: function (v, axis) {
+            var date = new Date(v);
+
+            if (date.getSeconds() % 20 == 0) {
+                var hours = date.getHours() < 10 ? "0" + date.getHours() : date.getHours();
+                var minutes = date.getMinutes() < 10 ? "0" + date.getMinutes() : date.getMinutes();
+                var seconds = date.getSeconds() < 10 ? "0" + date.getSeconds() : date.getSeconds();
+
+                return hours + ":" + minutes + ":" + seconds;
+            } else {
+                return "";
+            }
+       },
+        axisLabel: "Time",
+        axisLabelUseCanvas: true,
+        axisLabelFontSizePixels: 12,
+        axisLabelFontFamily: 'Verdana, Arial',
+        axisLabelPadding: 10
+    },
+    yaxis: {
+        min: 0,
+        max: 100,        
+        tickSize: 5,
+        tickFormatter: function (v, axis) {
+            if (v % 10 == 0) {
+                return v + "%";
+            } else {
+                return "";
+            }
+        },
+        axisLabel: "RX usage",
+        axisLabelUseCanvas: true,
+        axisLabelFontSizePixels: 12,
+        axisLabelFontFamily: 'Verdana, Arial',
+        axisLabelPadding: 6
+    },
+    legend: {        
+        labelBoxBorderColor: "#fff"
+    },
+    grid: {                
+        backgroundColor: "#000000",
+        tickColor: "#008040"
+    }
+};
+
+ 
+
+$(document).ready(function () {
+    GetData();
+
+    dataset = [
+        { label: "TX", data: data, color: "#00FF00" }
+        //{label: "RX", data:data, color: "#00ff00"}
+    ];
+
+    $.plot($("#flot-placeholder1"), dataset);
+
+    function update() {
+        GetData();
+
+        $.plot($("#flot-placeholder1"), dataset)
+        setTimeout(update, updateInterval);
+    }
+
+    update();
+});
+
+
+</script>
+
+******************************************************
+{% block graphs %}
+
+
+
+<!--script src="/js/lib/jquery-1.8.3.min.js"></script-->  
+<!--[if lte IE 8]><script language="javascript" type="text/javascript" src="/js/flot/excanvas.min.js"></script><![endif]-->
+
+    
+
+
+<!-- CSS -->
+<style type="text/css">
+#placeholder1 {
+    text-align: center;
+    margin: 0 auto;
+    
+}
+</style>
+
+<script type="text/javascript">
+var RX = []
+var TX = []
+var totalPoints = 100
+var updateInterval = 5000 //this will actually be "window"
+var now = new Date().getTime();
+
+function getinit(){
+    var initdata = $.ajax({
+        url:"/rates/",
+        type: "GET",
+        data: {IP: new URLSearchParams(window.location.search).get("IP")},
+        beforeSend: function(data, settings) {
+        },
+        success: function(data){
+    
+    var initrx = data.RX
+    var inittx = data.TX
+    var initup = data.uptime
+
+    //console.log(data)
+    //console.log(initrx)
+    //console.log(initup)
+      }});
+      for (var i = 0; i < totalPoints; i++){
+       var temp = [now + updateInterval, 0];
+
+      RX.push(temp);
+      TX.push(temp);
+      console.log(RX)
+    }
+  };
+
+var temp;
+
+function update(_data){
+  RX.shift();
+  TX.shift();
+
+  now += updateInterval
+
+  temp = [now, _data.RX]
+  RX.push(temp);
+
+  temp = [now, _data.TX]
+  TX.push(temp);
+
+  dataset =  [
+        { label: "RX:" + _data.RX + "%", data: RX, lines: { fill: true, lineWidth: 1.2 }, color: "#00FF00" },
+        { label: "TX:" + _data.TX + "KB", data: TX, color: "#0044FF", bars: { show: true }, yaxis: 2 },
+  ];
+  $.plot($("#placeholder1"), dataset, options);
+setTimeout()
+}
+
+function generateSeries(added){
+    var data = [];
+    var start = 100 + added;
+    var end = 200 + added;
+ 
+    for(i=1;i<=200;i++){        
+        var d = Math.floor(Math.random() * (end - start + 1) + start);        
+        data.push([i, d]);
+        start++;
+        end++;
+    }
+
+    return data;
+
+}
+ 
+$(document).ready(function(){   
+    var dataLarge1 = generateSeries(0);
+    var dataLarge2 = generateSeries(300);  
+      
+     
+    $.plot($("#placeholder1"),
+        [
+            {label: "RX", data: dataLarge1},
+            {label: "TX", data: dataLarge2}
+        ],
+        {            
+            grid: {
+                backgroundColor: { colors: ["#D1D1D1", "#7A7A7A"] }
+            },
+            xaxis: {
+                ticks: 20
+            },
+            yaxis: {
+                ticks: 10
+            }
+        }
+    );
+ 
+});
+</script>
+
+ 
+<!-- HTML -->
+<div id="placeholder1" style="height: 300px; width: 600px; padding: 0px; position: absolute; left: 50px; bottom: 50px ;"></div>
+
+<!--div id="placeholder2" style="height: 200px; width: 400px; padding: 0px; position: absolute; right: 0px; bottom: 0px ;"--></div>
+
+{% endblock graphs%}
+
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+<script src="{% static 'flot/excanvas.min.js' %}"></script>
+<script src="{% static 'flot/jquery.flot.min.js' %}"></script>
+ <script src="{% static 'flot/jquery.flot.min.js' %}"></script>
+<script src="{% static 'flot/jquery.flot.time.js' %}"></script>    
+<script src="{% static 'flot/jquery.flot.symbol.js' %}"></script>
+<script src="{% static 'flot/jquery.flot.axislabels.js' %}"></script>
+
+ 
+<script>
+
+
+   $(function() {
+    getinit();
+    startRefresh();
+    });
+
+function startRefresh() {
+      setTimeout(startRefresh,5000);
+      foo();
+      baz();
+    };
+
+    function foo() {
+      
+      var data = $.ajax(
+        {url:"/status/",
+        type: "GET",
+        data: {IP: new URLSearchParams(window.location.search).get("IP")},
+        beforeSend: function(data, settings) {
+        },
+        success: function(data){
+
+        document.getElementById("distance").innerHTML = "Distance from tower: " + data.distance + " lightyears";
+        document.getElementById("signal").innerHTML = "Signal Strength: " + data.signal;
+        document.getElementById("hostname").innerHTML = "Customer Name: " + data.hostname;
+        
+      }});
+    }
+function baz() {
+      
+      var data = $.ajax(
+        {url:"/rates/",
+        type: "GET",
+        data: {IP: new URLSearchParams(window.location.search).get("IP")},
+        beforeSend: function(data, settings) {
+        },
+        success: function(data){
+        document.getElementById("uptime").innerHTML = "It has been: " + data.uptime + " years since the CPE was last powercycled";
+        
+      }});
+    }
+</script>
+
+<div1 id="hostname" name="dev">Loading...</div1> 
+<div2 id="distance" name="dev">Loading...</div2> 
+<div3 id="signal"   name="dev">Loading...</div3> 
+<div4 id="uptime"   name="dev">Loading...</div4> 
+ 
+
+
+
+{% endblock script1 %}
+
+
+{% block graphs %}
+
+
+
+<!--script src="/js/lib/jquery-1.8.3.min.js"></script-->  
+<!--[if lte IE 8]><script language="javascript" type="text/javascript" src="/js/flot/excanvas.min.js"></script><![endif]-->
+
+    
+
+<!-- CSS -->
+<style type="text/css">
+#placeholder1 {
+    width: 600px;
+    height: 200px;
+    text-align: center;
+    margin: 0 auto;
+    
+}
+</style>
+
+<script type="text/javascript">
+
+var RX = [];
+var TX = [];
+var TXdata = [];
+var dataset;
+var totalPoints = 100
+var updateInterval = 5000 //this will actually be "window"
+var now = new Date().getTime();
+var temp;
+//console.log(now)
+
+
+var options = {
+    series: {
+        lines: {
+            lineWidth: 1.2
+        },
+        bars: {
+            align: "center",
+            fillColor: { colors: [{ opacity: 1 }, { opacity: 1}] },
+            barWidth: 500,
+            lineWidth: 1
+        }
+    },
+    xaxis: {
+        mode: "time",
+        tickSize: [60, "second"],
+        tickFormatter: function (v, axis) {
+            var date = new Date(v);
+
+            if (date.getSeconds() % 20 == 0) {
+                var hours = date.getHours() < 10 ? "0" + date.getHours() : date.getHours();
+                var minutes = date.getMinutes() < 10 ? "0" + date.getMinutes() : date.getMinutes();
+                var seconds = date.getSeconds() < 10 ? "0" + date.getSeconds() : date.getSeconds();
+
+                return hours + ":" + minutes + ":" + seconds;
+            } else {
+                return "";
+            }
+        },
+        axisLabel: "Fuuuuuuuuuuccccckkkk",
+        axisLabelUseCanvas: true,
+        axisLabelFontSizePixels: 12,
+        axisLabelFontFamily: 'Verdana, Arial',
+        axisLabelPadding: 10
+    },
+    yaxes: [
+        {
+            min: 0,
+            max: 100,
+            tickSize: 5,
+            tickFormatter: function (v, axis) {
+                if (v % 10 == 0) {
+                    return v + "%";
+                } else {
+                    return "";
+                }
+            },
+            axisLabel: "RX Usage loading",
+            axisLabelUseCanvas: true,
+            axisLabelFontSizePixels: 12,
+            axisLabelFontFamily: 'Verdana, Arial',
+            axisLabelPadding: 6
+        }, {
+            //max: 5120,
+            position: "right",
+            axisLabel: "Disk",
+            axisLabelUseCanvas: true,
+            axisLabelFontSizePixels: 12,
+            axisLabelFontFamily: 'Verdana, Arial',
+            axisLabelPadding: 6
+        }
+    ],
+    legend: {
+        noColumns: 0,
+        position:"nw"
+    },
+    grid: {      
+        backgroundColor: { colors: ["#32cd32", "#999999"] }
+    }
+};
+
+function GetData(){
+
+  $.ajaxSetup({ cache: false });
+
+        $.ajax({
+        url:"/rates/",
+       // dataType: 'json',
+        type: "GET",
+        data: {IP: new URLSearchParams(window.location.search).get("IP")},
+        beforeSend: function(data, settings) {},
+        success: update,
+        error:function(){
+          setTimeout(GetData, updateInterval);
+        }
+      });
+  };
+
+
+function getinit(){
+      for (var i = 0; i < totalPoints; i++){ //for range(0-100)
+       var temp = [now + updateInterval, 0]; //temp = now + 5000 | make this (inituptime - nowuptime)
+
+      RX.push(temp);
+      TX.push(temp);
+      //console.log(RX)
+    }
+  }
+
+function update(_data){
+    //console.log(_data)
+  RX.shift();
+  //if TXdata is more than two?
+  //TXdata.shift();
+
+  if (typeof(last) == 'undefined') {
+  last = _data.uptime
+  }
+  current = _data.uptime - last 
+  //last = _data.uptime
+  now += updateInterval
+
+if (typeof(lastTX) == 'undefined'){
+    lastTX = _data.TX
+}
+  currentTX = _data.TX - lastTX
+  lastTX = _data.TX
+console.log(currentTX)
+
+
+  temp = [now, _data.RX]
+  RX.push(temp);
+
+  temp = [current, currentTX]
+  TXdata.push(temp);
+console.log(TXdata)
+  dataset =  [
+        { label: "RX:" + 0 + " datas", 
+        data: RX, lines: { fill: true, lineWidth: 1.2 }, 
+        color: "#00FF00" },
+        { label: "TX:" + TXdata + " datas", 
+        data: TX, 
+        color: "#0044FF", 
+        bars: { show: true }, 
+        yaxis: 2 },
+  ];
+  $.plot($("#placeholder1"), dataset, options);
+    setTimeout(GetData, updateInterval)
+}
+
+
+$(document).ready(function(){   
+    //getinit();
+
+     dataset =  [
+        { label: "RX:" + RX + "KB", data: RX, lines: { fill: true, lineWidth: 1.2 }, color: "#00FF00" },
+        { label: "TX:" + TX + "KB", data: TX, color: "#0044FF", bars: { show: true }, yaxis: 2 },
+  ];
+
+     
+    $.plot($("#placeholder1"), dataset, options);
+    setTimeout(GetData, updateInterval);
+});
+</script>
+
+ 
+<!-- HTML -->
+<div id="placeholder1" style="height: 300px; width: 600px; padding: 0px; position: absolute; left: 50px; bottom: 50px ;"></div>
+
+<!--div id="placeholder2" style="height: 200px; width: 400px; padding: 0px; position: absolute; right: 0px; bottom: 0px ;"--></div>
+
+<script>
+	$(function() {
+
+		// We use an inline data source in the example, usually data would
+		// be fetched from a server
+
+		var data = [],
+			totalPoints = 300;
+
+		function getRandomData() {
+
+			if (data.length > 0)
+				data = data.slice(1);
+
+			// Do a random walk
+
+			while (data.length < totalPoints) {
+
+				var prev = data.length > 0 ? data[data.length - 1] : 50,
+					y = prev + Math.random() * 10 - 5;
+
+				if (y < 0) {
+					y = 0;
+				} else if (y > 100) {
+					y = 100;
+				}
+
+				data.push(y);
+			}
+
+			// Zip the generated y values with the x values
+
+			var res = [];
+			for (var i = 0; i < data.length; ++i) {
+				res.push([i, data[i]])
+			}
+
+			return res;
+		}
+
+		// Set up the control widget
+
+		var updateInterval = 30;
+		$("#updateInterval").val(updateInterval).change(function () {
+			var v = $(this).val();
+			if (v && !isNaN(+v)) {
+				updateInterval = +v;
+				if (updateInterval < 1) {
+					updateInterval = 1;
+				} else if (updateInterval > 2000) {
+					updateInterval = 2000;
+				}
+				$(this).val("" + updateInterval);
+			}
+		});
+
+		var plot = $.plot("#placeholder", [ getRandomData() ], {
+			series: {
+				shadowSize: 0	// Drawing is faster without shadows
+			},
+			yaxis: {
+				min: 0,
+				max: 100
+			},
+			xaxis: {
+				show: false
+			}
+		});
+
+		function update() {
+
+			plot.setData([getRandomData()]);
+
+			// Since the axes don't change, we don't need to call plot.setupGrid()
+
+			plot.draw();
+			setTimeout(update, updateInterval);
+		}
+
+		update();
+
+		// Add the Flot version string to the footer
+
+		$("#footer").prepend("Flot " + $.plot.version + " &ndash; ");
+	});
+
+
+
+
+//function GetData() {
+//
+//  $.ajaxSetup({ cache: false });
+//  
+//        $.ajax({
+//        url:"/rates/",
+//        dataType: 'json',
+//        type: "GET",
+//        data: {IP: new URLSearchParams(window.location.search).get("IP")},
+//        beforeSend: function(data, settings) {},
+//        success: function(jdata){
+//                 
+//        if (typeof(last) == 'undefined') {
+//            last = jdata.uptime
+//            }
+//        current = jdata.uptime - last 
+//
+//        if (typeof(lastTX) == 'undefined'){
+//            lastTX = jdata.TX
+//            }
+//        currentTX = jdata.TX - lastTX
+//
+//        console.log(current)
+//
+//
+//    var temp = [current, currentTX];
+//    data.push(temp);
+//    console.log(temp)
+//
+//     
+//if (typeof(lastRX) == 'undefined'){
+//lastRX = jdata.RX
+//}
+//currentRX = jdata.RX - lastRX
+//lastRX = jdata.RX
+////console.log(currentRX)
+//
+//
+//    var temp = [current, currentRX];
+//    data.push(temp);
+//    
+//    return temp;
+//    },  
+//         
+
+
+
+
+
+</script>
