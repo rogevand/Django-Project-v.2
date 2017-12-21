@@ -29,3 +29,4 @@ for key, value in host.items():
         myKey["hostname"]  = value.split("[", 1)[0]
 
 print(myKey["package"])
+ 

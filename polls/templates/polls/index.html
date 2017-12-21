@@ -7,9 +7,27 @@
 {{ section.title }}
 {% endblock %}
 
+{% block navbar %}
+
+<div class="navbar">
+        <a href="#home">Home</a>
+        <a href="#not_fucking_here_yet_you_impatient_ass_munch">Charts n shit</a>
+        <div class="dropdown">
+            <button class="dropbtn">Links
+            <i class="fa fa-caret-down"></i>
+            </button>
+            <div class="dropdown-content">
+            <a href="#">More details</a>
+            <a href="#">See connected tower status</a>
+            <a href="#">Something else probably</a>
+            </div>
+        </div>
+    </div> 
+    
+{% endblock %}
+
 
 {% block script1 %}
-
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
@@ -20,7 +38,7 @@
 <script src="{% static 'flot/jquery.flot.symbol.js' %}"></script>
 <script src="{% static 'flot/jquery.flot.axislabels.js' %}"></script>
 
- <a style="position:absolute; top:20px; right:20px;"href="/logout">Log out</a>
+ <a id="logout" href="/logout"> Log out </a>
 
 <script>
 var warnings = {};
@@ -51,10 +69,15 @@ var data = $.ajax({
     beforeSend: function(data, settings) {},
     success: function(data){
 
+        //display connected tower
+        document.getElementById("tower").innerHTML = "Connected tower SSID: " + data.ssid;
+        document.getElementById("tower").style.borderColor = "yellowgreen";
+
         // get distance from tower
         document.getElementById("distance").innerHTML = "Distance from tower: " + "<br>" + data.distance;
-        document.getElementById("distance").style.borderColor = "yellowgreen"
+        document.getElementById("distance").style.borderColor = "yellowgreen";
         document.getElementById("signal").innerHTML = "Signal Strength: " + "<br>" + data.signal;
+
         // signal strength
         if (signals == ""){
             if(data.signalint > 60){
@@ -204,6 +227,7 @@ function ifstats() {
         document.getElementById("uptime").innerHTML = "Time since last reboot: " + data.uptime;  
         if(data.color == false){
             document.getElementById("uptime").style.borderColor= "red";
+            warnings["uptime"] = "CHECK UPTIME BITCHES"
         }
         else if(data.color == true){
             document.getElementById("uptime").style.borderColor= "green";
@@ -222,13 +246,27 @@ function packagedeets(){
       }});
 
 }
-    //below is the backbone for the netwizard
+
+//below is the backbone for the netwizard
+for(var key in warnings) {
+  var value = warnings[key];
+ 
+ var wisdomsz = new array
+ wisdomsz += value
+ 
+}
+
    
 </script>
 
 <!-- making placeholders for all above funtions -->
 <div id="hostname" title="This is the customer's name" name="dev">
 Loading customer name...
+</div> <br>
+
+
+<div id="tower" title="This is the SSID if the tower that the customer is connected to" name="dev">
+Loading tower SSID...
 </div> <br>
 
 <div id="signal"   title="A good signal strength is anywhere below 70" name="dev">
@@ -412,13 +450,6 @@ Checking hardware integrity...
 </div>
 
 <script>
-for(var key in warnings) {
-  var value = warnings[key];
- 
- var wisdomsz = new array
- wisdomsz += value
- 
-}
 document.getElementById("wisdom").innerHTML = warnings["signal"];
 
 

@@ -33,4 +33,4 @@ if myKey["plex"] == False:
     print("looks like the device is broken somehow")
 elif myKey["plex"] == True:
     print("device looks okay")
-    
+     

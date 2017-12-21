@@ -46,6 +46,11 @@ def status(request):
     eth0 = json2Dict["interfaces"][0]["status"]["plugged"]
     myKey["eth"] = eth0
 
+    #determine connected tower
+    for key, value in wireless.items():
+        if key == "essid":
+            myKey["ssid"] = value
+
     #determine member package (need to find a better way of doing this)
     for key, value in host.items():
         if key == "hostname":
@@ -89,7 +94,7 @@ def status(request):
                 myKey[key] = str(value) + " (Strong signal) "
                 myKey["signalint"] = abs(int(value))
 
-    #determine if therer is physically something wrong with the CPE
+    #determine if there is physically something wrong with the CPE
     if json2Dict["interfaces"][1]["status"]["duplex"] == 1:
         myKey["plex"] = True
     elif json2Dict["interfaces"][1]["status"]["duplex"] == 0:
@@ -120,7 +125,7 @@ def packagedeets(request):
     #print(fullpage)
     
     #get shit and stick it into packagekey here
-
+ 
     return JsonResponse(packagekey) 
 
 def rates(request):

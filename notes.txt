@@ -226,4 +226,17 @@ rx/tx
 tower 
 MAC 
 
-*****Goal for today is to use beautifulsoup to access the real package details*****
+*****Goal for today is to use beautifulsoup to access the real package details***** --- {todays_goal: fail}
+
+Questions for Dan:
+is there a big list of IP addresses?
+
+
+check to see if the tower connected matches the tower in Salesforce
+
+clean up my app
+
+added navbar.
+
+fix authentication
+
