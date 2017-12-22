@@ -16,6 +16,6 @@ json2Dict = json.loads(requests.get(statusurl, cookies = get1.cookies).content.d
 wireless = json2Dict["wireless"] #get specific elements from the json
 
 
-
-members = len(wireless["sta"])
+print("Calculating...")
+members = wireless["count"]
 print(members)

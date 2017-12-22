@@ -1,8 +1,12 @@
 {% extends "polls/base.html" %}
-
+{% load static %}
 {% block content %}
-<div class="log">
-<p>Logged out! </p>  
+<link rel="stylesheet" href="{% static 'mystyle.css' %}">
+<div class="loggedout">
+
+<img id="yoda" src="{% static 'yoda.jpg' %}" />
+
+<p id="logout_text">Logged out! </p>  
 
 <a href="{% url 'login'%}"> Click here to login again.</a>
 </div>

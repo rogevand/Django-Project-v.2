@@ -7,29 +7,6 @@
 {{ section.title }}
 {% endblock %}
 
-{% block navbar %}
-
-<div class="navbar">
-        <a href="#home">Home</a>
-        <a href="#not_fucking_here_yet_you_impatient_ass_munch">Charts n shit</a>
-        <div class="dropdown">
-            <button class="dropbtn">Links
-            <i class="fa fa-caret-down"></i>
-            </button>
-            <div class="dropdown-content">
-            <a href="#">More details</a>
-            <a href="#">See connected tower status</a>
-            <a href="#">Something else probably</a>
-            </div>
-        </div>
-    </div> 
-
-<div id="SPlogo">
-    
-<img src="{% static 'SPlogo.jpg' %}" />
-    
-{% endblock %}
-
 
 {% block script1 %}
 
@@ -42,7 +19,7 @@
 <script src="{% static 'flot/jquery.flot.symbol.js' %}"></script>
 <script src="{% static 'flot/jquery.flot.axislabels.js' %}"></script>
 
- <a id="logout" href="/logout"> Log out </a>
+ 
 
 <script>
 var warnings = {};
@@ -69,10 +46,16 @@ var malfs = ""
 var data = $.ajax({
     url:"/status/",
     type: "GET",
-    data: {IP: new URLSearchParams(window.location.search).get("IP")},
+    data: {
+        IP: new URLSearchParams(window.location.search).get("IP"), 
+        dt: new URLSearchParams(window.location.search).get("dt")},
     beforeSend: function(data, settings) {},
     success: function(data){
-
+        //set a variable notating if the device is a tower or not
+        if (data.dt == "tower"){
+            var tower = true
+        }
+        
         //display connected tower
         document.getElementById("tower").innerHTML = "Connected tower SSID: " + data.ssid;
         document.getElementById("tower").style.borderColor = "yellowgreen";

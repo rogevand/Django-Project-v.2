@@ -215,7 +215,7 @@ potential solutions:
 
 features to add:
 determine if the equipment is a tower or a CPE
-Determine package from data rather than parsing from name
+Determine package from data rather than parsing from name *******access to salesforce for this? which may actually be less robust...
 
 
 Need a program that will scan a list of ip addresses and return a list of the 
@@ -250,3 +250,4 @@ add to page all of the connected members and their details in little cards at th
 
 
 Figure out how to determine if the device is a tower or CPE...................
+

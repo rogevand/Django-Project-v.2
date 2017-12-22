@@ -1,13 +1,36 @@
 {% load static %}
+ 
+
 
 <head>
-    <title>CPE Info:</title>
+    <title>Login</title>
     
     <link rel="icon" href="{% static 'doge.png' %}">
     <link rel="stylesheet" href="{% static 'mystyle.css' %}">
-   
 </head>
+
+<div class="navbar">
+    <a href="{% url 'main' %}">Home</a>
+    <a href="#patience... we are still working on this">Charts</a>
+    <div class="dropdown">
+        <button class="dropbtn">Links
+        <i class="fa fa-caret-down"></i>
+        </button>
+        <div class="dropdown-content">
+        <a href="#">More details</a>
+        <a href="#">See connected tower status</a>
+        <a href="#">Something else probably</a>
+        </div>
+    </div>
+</div> 
+
+<div id="SPlogo">
+    <img src="{% static 'SPlogo.jpg' %}" />
+</div>
+
 <body>
+
+
 
 {% block navbar %}
 {% endblock %}

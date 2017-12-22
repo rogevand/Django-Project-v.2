@@ -1,3 +1,41 @@
+
+
+input[type=text], select {
+    width: 100%;
+    padding: 12px 20px;
+    margin: 8px 0;
+    display: inline-block;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+input[type=submit] {
+    width: 100%;
+    background-color: #4CAF50;
+    color: white;
+    padding: 14px 20px;
+    margin: 8px 0;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+input[type=submit]:hover {
+    background-color: #45a049;
+}
+
+
+#IPinput {
+  height: auto;
+  width: 100%;
+  display: flex;
+  position: fixed;
+  align-items: center;
+  justify-content: center;
+  display: flex;
+}
+
 #graphinfo {
     font-family: Verdana;
     border: 5px solid grey;
@@ -7,7 +45,17 @@
     display: flex;
     vertical-align: left;
 }
-.log{
+#logout{
+    position:absolute; 
+    top:23%; 
+    right: 2%;
+    font-size: 20;
+    font-family: Courier New, Courier, monospace;
+    font-weight: bold;
+    color: white;
+    padding: 3px;
+}
+.login{
     font-family: Verdana;
     border: 5px solid yellowgreen;
     border-radius: 10px;
@@ -127,7 +175,7 @@
     justify-content: center;
 }
 button{
-    background-color: #4CAF50;
+    background-color:yellowgreen;
     color: white;
     padding: 14px 20px;
     margin: auto;
@@ -309,15 +357,19 @@ button{
 }
  /* Navbar container */
  .navbar {
+  width: 98%;
+  border-radius: 30px;
   overflow: hidden;
+  position: fixed;
   background-color: rgb(25, 36, 28);
   font-family: Arial;
+
 }
 
 /* Links inside the navbar */
 .navbar a {
   float: left;
-  font-size: 20px;
+  font-size: 25px;
   font-family: Courier New, Courier, monospace;
   font-weight: bold;
   color: white;
@@ -334,7 +386,7 @@ button{
 
 /* Dropdown button */
 .dropdown .dropbtn {
-  font-size: 20px;
+  font-size: 25px;
   font-weight: bold;
   font-family: Courier New, Courier, monospace;
   border: none;

@@ -1,18 +1,8 @@
 {% extends "polls/base.html" %}
 
-{% block main %}
-
-<html lang="en">
+{% block main %} 
 
 {% load static %}
-<head>
-    <link rel="stylesheet" href="{% static 'mystyle.css' %}">
-</head>
-
-
-<div id="SPlogo">
-<img src="{% static 'SPlogo.jpg' %}" />
-</div>
 
 <a id="logout" >Log out</a>
 
@@ -20,13 +10,20 @@
 <title>Search by IP address</title>
 </head>
 
-
 <div id="IPinput">
-  <form action="/polls", method="GET">
-    <input type="text" id="IP" name="IP" placeholder="Customers IP...">
-  
-    <input type="submit" value="Submit">
-  </form>
+<form action="/polls", method="GET">
+  <ul class="errorMessages"></ul>
+  <!--pid="IP" name="IP" placeholder="Customers IP..."-->
+  <div>
+      <input id="IP" placeholder="Customers IP..." name="IP" type="text" required>
+      
+      <!--input type="submit" value="Submit"-->
+      <input type="checkbox" name="dt" value=tower> This is a tower<br>
+      <input type="submit" value="Submit">
+  </div>
+
+</form>​
+
 </div>
 
 </body>

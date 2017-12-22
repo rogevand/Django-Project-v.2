@@ -40,13 +40,14 @@ def login(request):
 def status(request):
     myKey = {}
     if request.method == 'GET':
-        global IP
         IP = request.GET.get('IP')
-
-    
+        myKey["dt"] = str(request.GET.get('dt'))
+        if myKey["dt"] == "tower":
+            tower()
+            pass
     loginurl = "http://{0}/login.cgi".format(IP) #login page variable
     statusurl = "http://{0}/status.cgi".format(IP) #destination page variable
-    auth = {'username': (None, 'wearethebest'), 'password': (None, 'extra123')} #authenticate page INSECURE
+    auth = {'username': (None, 'ubnt'), 'password': (None, 'access')} #authenticate page... INSECURE
     get1 = requests.get(loginurl) #retrieve page
     post = requests.post(loginurl, files = auth, cookies = get1.cookies) #set cookies for password
     json2Dict = json.loads(requests.get(statusurl, cookies = get1.cookies).content.decode('utf-8')) #format the contents as a json object
@@ -140,8 +141,7 @@ def status(request):
                 myKey["signalint"] = abs(int(value))
 
     # if tower, determine the number of members connected to this tower
-    members = len(wireless["sta"])
-
+    members = wireless["count"]
 
     #determine if there is physically something wrong with the CPE
     if json2Dict["interfaces"][1]["status"]["duplex"] == 1:
@@ -164,7 +164,7 @@ def packagedeets(request):
         IP = request.GET.get('IP')
     loginurl = "http://{0}/login.cgi".format(IP) #login page variable
     statusurl = "http://{0}/network.cgi".format(IP) #destination page variable
-    auth = {'username': (None, 'wearethebest'), 'password': (None, 'extra123')} #authenticate page INSECURE
+    auth = {'username': (None, 'ubnt'), 'password': (None, 'access')} #authenticate page INSECURE
     page = requests.get(loginurl) #retrieve page
     post = requests.post(loginurl, files = auth, cookies = page.cookies) #set cookies for password
     #fullpage is the string html version of the entire page
@@ -173,7 +173,7 @@ def packagedeets(request):
     #soup = BeautifulSoup(fullpage, 'html.parser')
     #print(fullpage)
     
-    #get shit and stick it into packagekey here
+    #get stuff and stick it into packagekey here
  
     return JsonResponse(packagekey) 
 
@@ -206,6 +206,94 @@ def rates(request):
         myKey["TX"] = txspeed
         
         return JsonResponse(myKey)
+############################################################################################################################################################################
+def tower(vars):
+    print("there is nothing better than the moonlit apple tree on the north farm ")
+    #determine the uptime
+    myKey["uptime"] = str(round(float(host["uptime"]) /120, 2)) 
+    myKey["upsec"] = str(round(float(host["uptime"]), 2))
 
+    # get and format the CPE uptime
+    seconds = int(host["uptime"])
+    m, s = divmod(seconds, 60)
+    h, m = divmod(m, 60)
+    d, h = divmod(h, 24)
+    sec = "seconds"
+    mi = "minutes"
+    ho = "hours"
+    da = "days, "
+    # no janky "1 minutes" will be found here
+    if s == 1:
+        sec = "second "
+    if m == 1:
+        mi = "minute, "
+    if h == 1:
+        ho = "hour, "
+    elif h == 0:
+        ho = ""
+    if d == 1:
+        da = "day, "
+    elif d == 0:
+        da = ""
+    myKey["uptime"] = ("%d {0} %d {1} %2d {2} and like %2d {3}" % (d, h, m, s)).format(da, ho, mi, sec)
+    if (seconds / 120) < 120:
+        myKey["color"] = True
+    elif (seconds / 120) >= 120:
+            myKey["color"] = False
 
+    #determine connected tower
+    for key, value in wireless.items():
+        if key == "essid":
+            myKey["ssid"] = value
+
+    #determine member package (need to find a better way of doing this)
+    for key, value in host.items():
+        if key == "hostname":
+            if "SL" in value:
+                myKey["package"] = "Smart Link"
+            elif "EL" in value:
+                myKey["package"] = "Elite Link"
+            elif "PL" in value:
+                myKey["package"] = "Power Link"
+            myKey["hostname"]  = value.split("[", 1)[0]
+
+    # look for cpuload key and stick value into a dictionary (myKey)
+    if "cpuload" in host:
+        myKey["cpuload"] = int(host["cpuload"])
+    else:
+        myKey["cpuload"] = False
+
+    for key, value in host.items():
+        if key == "hostname":
+            if "SL" in value:
+                myKey["package"] = "Smart Link"
+            elif "EL" in value:
+                myKey["package"] = "Elite Link"
+            elif "PL" in value:
+                myKey["package"] = "Power Link"
+            myKey["hostname"]  = value.split("[", 1)[0]
+            # this is here for efficiency. by determining whether the device is a tower or a CPE I can skip something later I think
+            if "-" in value:
+                myKey["signalint"] = abs(int(wireless["sta"][0]["signal"]))
+
+    #determine member distance from tower 
+    
+    for key, value in wireless.items(): # (same for distance)
+        if key == "distance":
+            dis = value /1609.34 #convert to miles from meters
+            myKey[key] = "About " + str(round(dis, 2)) + " miles"
+        if key == "signal":
+            if abs(int(value)) > 70:
+                myKey[key] = str(value) + " (Weak signal) "
+                myKey["signalint"] = abs(int(value))
+            elif 70 >= abs(int(value)) > 65:
+                myKey[key] = str(value) + " (Decent signal) "
+                myKey["signalint"] = abs(int(value))
+            elif abs(int(value)) < 65:
+                myKey[key] = str(value) + " (Strong signal) "
+                myKey["signalint"] = abs(int(value))
+
+    # if tower, determine the number of members connected to this tower
+    members = wireless["count"]
+    return JsonResponse(myKey)
 
