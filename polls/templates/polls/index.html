@@ -23,6 +23,10 @@
             </div>
         </div>
     </div> 
+
+<div id="SPlogo">
+    
+<img src="{% static 'SPlogo.jpg' %}" />
     
 {% endblock %}
 
@@ -76,7 +80,7 @@ var data = $.ajax({
         // get distance from tower
         document.getElementById("distance").innerHTML = "Distance from tower: " + "<br>" + data.distance;
         document.getElementById("distance").style.borderColor = "yellowgreen";
-        document.getElementById("signal").innerHTML = "Signal Strength: " + "<br>" + data.signal;
+        document.getElementById("signal").innerHTML = "Signal Strength: " + "<br>" + data.signalint;
 
         // signal strength
         if (signals == ""){
@@ -109,7 +113,7 @@ if (CPUs == ""){
                 }
             
             else if (data.cpuload >= 90){
-                CPUs = "&#9755 CPU usage is off the charts: reboot the CPE, check for firmware updates <br>"
+                CPUs = "&#9755 CPU usage is off the charts: reboot and check for firmware updates <br>"
                 warnings["cpu"] = CPUs
             }
         }
@@ -122,7 +126,7 @@ if (CPUs == ""){
             cpl.innerHTML = "CPU usage: " + data.cpuload + "%"; 
             if (data.cpuload >= 90){
             cpl.style.borderColor= "red";
-            cpl.title= "This is actually fairly normal. Have the customer reboot the CPE ";
+            cpl.title= "This is actually fairly normal. Reboot";
             var cups = cpl;
             cups.className = "fire";
             document.getElementById("wisdom").style.borderColor = "red"
@@ -138,7 +142,7 @@ if (CPUs == ""){
         }
         else if(data.cpuload <= 80){
             cpl.style.borderColor= "green";
-            cpl.title= "If the CPU usage is stuck at 100% for more than a minute, it may be a good idea to reboot the CPE";
+            cpl.title= "If the CPU usage is stuck at 100% for more than a minute, it may be a good idea to reboot ";
             var cups = cpl;
             cups.className = "basic";
         }}
@@ -169,11 +173,11 @@ if (CPUs == ""){
     }
     // we are given a bool to checked plugged or no
     if (data.eth == 1){
-        document.getElementById("eth0").innerHTML = "CPE is plugged in"
+        document.getElementById("eth0").innerHTML = "Radio is powered on"
         document.getElementById("eth0").style.borderColor = "green"
     }
     else if(data.eth == 0){
-        document.getElementById("eth0").innerHTML = "CPE is not plugged in"
+        document.getElementById("eth0").innerHTML = "Radio is not plugged in"
         document.getElementById("eth0").style.borderColor = "red"
     }
     // this function checks to see if the CPE is enabled (late bill payment)
@@ -184,11 +188,11 @@ if (CPUs == ""){
         }
     }
     if (data.enabled == true){
-        document.getElementById("enabled").innerHTML = "CPE is enabled"
+        document.getElementById("enabled").innerHTML = "Radio is enabled"
         document.getElementById("enabled").style.borderColor = "green"
     }
     else if(data.enabled == false){
-        document.getElementById("enabled").innerHTML = "CPE is not enabled"
+        document.getElementById("enabled").innerHTML = "Radio is not enabled"
         document.getElementById("enabled").style.borderColor = "red"
     }
     //check duplex value for physical malfunctions
@@ -198,7 +202,7 @@ if (CPUs == ""){
          // add function output to the netwizard
         }
     }
-    //is this elseif necessary??????????????
+    //is this elseif necessary?????????????? what is this garbage 
     else if(data.plex == true){
         malfs = ""
         warnings["malfunction"]= malfs
@@ -210,6 +214,16 @@ if (CPUs == ""){
     else if(data.plex == false){
         document.getElementById("plex").innerHTML = "Physical malfunctions detected"
         document.getElementById("plex").style.borderColor = "red"
+    }
+    document.getElementById("uptime").innerHTML = "Time since last reboot: " + data.uptime;
+
+    //get device uptime
+    if(data.color == false){
+        document.getElementById("uptime").style.borderColor= "red";
+        warnings["uptime"] = "CHECK UPTIME RIGHT NOW"
+    }
+    else if(data.color == true){
+        document.getElementById("uptime").style.borderColor= "green";
     }
     }});
 }
@@ -224,14 +238,7 @@ function ifstats() {
         beforeSend: function(data, settings) {
         },
         success: function(data){
-        document.getElementById("uptime").innerHTML = "Time since last reboot: " + data.uptime;  
-        if(data.color == false){
-            document.getElementById("uptime").style.borderColor= "red";
-            warnings["uptime"] = "CHECK UPTIME BITCHES"
-        }
-        else if(data.color == true){
-            document.getElementById("uptime").style.borderColor= "green";
-        }
+        
       }});
     }
 
@@ -260,12 +267,12 @@ for(var key in warnings) {
 </script>
 
 <!-- making placeholders for all above funtions -->
-<div id="hostname" title="This is the customer's name" name="dev">
-Loading customer name...
+<div id="hostname" title="This is the customer's name or the name of the tower" name="dev">
+Loading customer/tower name...
 </div> <br>
 
 
-<div id="tower" title="This is the SSID if the tower that the customer is connected to" name="dev">
+<div id="tower" title="This is the SSID if the tower that the customer is connected to, or the SSID of the tower itself" name="dev">
 Loading tower SSID...
 </div> <br>
 
@@ -273,7 +280,7 @@ Loading tower SSID...
 Loading signal strength...
 </div> <br>
 
-<div id="uptime"   title=" If the CPE has not been rebooted in the last 24 hours, ask them to reboot" name="dev">Loading CPE uptime...
+<div id="uptime"   title=" If the radio has not been rebooted in the last 24 hours, ask them to reboot" name="dev">Loading equipment uptime...
 </div> <br>
 
 <!--button type="button" onclick="bar();">Does the customer want to stream movies?</button--> 
@@ -429,10 +436,10 @@ $("#footer").prepend("Flot " + $.plot.version + " &ndash; ");
 
 
 <div id="eth0" title="Determine if the equipment is actually plugged in" name="dev">
-Loading CPE power status... 
+Loading power status... 
 </div> <br>
 <div id="enabled" title="If equipment is disabled, the customer may be late on bill payments" name="dev">
-Loading CPE enabled state...
+Loading enabled state...
 </div> <br>
 <div id="plex" title="If a physical malfunction is detected, one or more parts of the equipment may need to be replaced" name="dev">
 Checking hardware integrity...
@@ -450,7 +457,7 @@ Checking hardware integrity...
 </div>
 
 <script>
-document.getElementById("wisdom").innerHTML = warnings["signal"];
+document.getElementById("wisdom").innerHTML = warnings["signalint"];
 
 
 </script>

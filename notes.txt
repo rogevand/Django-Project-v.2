@@ -238,5 +238,15 @@ clean up my app
 
 added navbar.
 
-fix authentication
+fixed authentication
 
+added tower usage. Fix uptime and figure out the best way to enter usernames and passwords for the towers/CPE's respectively
+
+Beautify login page
+
+for towers:
+fix uptime
+add to page all of the connected members and their details in little cards at the bottom - this is true programming pwowewr
+
+
+Figure out how to determine if the device is a tower or CPE...................
